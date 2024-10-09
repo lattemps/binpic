@@ -1,3 +1,7 @@
+#    _   ,_,   _
+#   / `'=) (='` \      binpic - Makefile.
+#  /.-.-.\ /.-.-.\     Oct 9 2024
+#         "      `
 objs = binpic.o
 flags = -Wall -Wextra -Wpedantic
 exec = binpic
