@@ -167,4 +167,25 @@ static void get_terminal_dimensions (long *const lines, long *const cols)
 static void display_colored_bin (struct BinPic *const bp)
 {
     printf("\x1b[2J");
+    uint8_t r = 0, g = 0, b = 0;
+
+    for (size_t k = 0; k < bp->filength; k++) {
+        uint8_t index = (uint8_t) bp->contents[k];
+        const uint32_t color = (index) ? Colors[(uint8_t) bp->contents[k]] : Colors[(index + r + b + g) % 255];
+
+        r = (color >> 16) & 0xff;
+        g = (color >> 8) & 0xff;
+        b = (color) & 0xff;
+
+        printf("\x1b[48;2;%d;%d;%dm \x1b[0m", r, g, b);
+    }
+
+    /*for (size_t k = 0; k < 256; k++) {
+        unsigned int this   = Gradient[k];
+        unsigned char red   = (this >> 16) & 0xff;
+        unsigned char green = (this >> 8) & 0xff;
+        unsigned char blue  = (this) & 0xff;
+
+        printf("\x1b[48;2;%d;%d;%dm(%3d, %3d, %3d)\x1b[0m\n", red, green, blue, red, green, blue);
+    }*/
 }
