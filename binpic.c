@@ -12,11 +12,12 @@
 
 struct BinPic
 {
-    char    *bincontents;
-    char    *binfile;
-    char    *animation;
+    struct  { long lines, cols; } termsz;
+    char    *contents;
+    char    *filename;
+    char    *anfilename;
     size_t  filength;
-    bool    title;
+    bool    putitle;
 };
 
 static void print_usage (void);
@@ -31,19 +32,17 @@ int main (int argc, char **argv)
 
     while ((op = getopt(argc, argv, ":Tha:b:")) != -1) {
         switch (op) {
-            case 'T': bp.title     = true; break;
-            case 'a': bp.animation = optarg; break;
-            case 'b': bp.binfile   = optarg; break;
+            case 'T': bp.putitle    = true; break;
+            case 'a': bp.anfilename = optarg; break;
+            case 'b': bp.filename   = optarg; break;
             case 'h': print_usage(); break;
             case '?': errx(EXIT_FAILURE, "unknonwn '-%c' option...", optopt); break;
             case ':': errx(EXIT_FAILURE, "option '-%c' needs an argument...", optopt); break;
         }
     }
 
-    if (!bp.binfile) print_usage();
+    if (!bp.filename) print_usage();
     read_bin_file(&bp);
-
-    printf("%s\n", bp.bincontents);
 
     return 0;
 }
@@ -54,24 +53,24 @@ static void print_usage (void)
     fputs("Usage: binpic -b <filename> -[Th] -[a] <*>\n", stderr);
     fputs("Arguments:\n", stderr);
     fputs("  -T             Write file's name in the middle of the screen\n", stderr);
-    fputs("  -a             Animate output with <*> animation\n", stderr);
+    fputs("  -a             Animate output with <*> anfilename\n", stderr);
     fputs("  -h             Display this message\n", stderr);
     exit(EXIT_SUCCESS);
 }
 
 static void read_bin_file (struct BinPic *const bp)
 {
-    FILE *bfile = fopen(bp->binfile, "rb");
-    if (!bfile) err(EXIT_FAILURE, "'%s' file is not valid", bp->binfile);
+    FILE *bfile = fopen(bp->filename, "rb");
+    if (!bfile) err(EXIT_FAILURE, "'%s' file is not valid", bp->filename);
 
     fseek(bfile, 0L, SEEK_END);
     bp->filength = ftell(bfile);
     fseek(bfile, 0L, SEEK_SET);
 
-    bp->bincontents = (char*) calloc(bp->filength + 1, sizeof(char));
-    if (!bp->bincontents) err(EXIT_FAILURE, "cannot allocate memory :(");
+    bp->contents = (char*) calloc(bp->filength + 1, sizeof(char));
+    if (!bp->contents) err(EXIT_FAILURE, "cannot allocate memory :(");
 
-    const size_t read = fread(bp->bincontents, 1, bp->filength, bfile);
+    const size_t read = fread(bp->contents, 1, bp->filength, bfile);
     if (read != bp->filength)
         warnx("cannot read whole file: %ld/%ld (B) were read", read, bp->filength);
     fclose(bfile);
