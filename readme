@@ -12,9 +12,7 @@
 
         This program can be used with any type of file since all what the
         program is doing is reading the bytes of the file itself, so the
-        program can be used to color and make art somehow, try with some
-        files in the 'examples' folder, if you want to see the color palette
-        make a `cat` into `colores/palette`.
+        program can be used to color and make art somehow.
 
     ~ Credits:
         * Original version: https://github.com/FireyFly/pixd.com
