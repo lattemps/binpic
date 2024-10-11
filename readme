@@ -1,0 +1,24 @@
+
+        _   ,_,   _
+       / `'=) (='` \      binpic - Binary picture.
+      /.-.-.\ /.-.-.\     Oct 11 2024
+             "      `
+
+    ~ About:
+        This is my own implementation of the 'pixd' command orinally design
+        by FireyFly; I think i achived it even tho i wanted to make some
+        animations, but they were not implemented since the output is too
+        big sometimes, so i thought it would not be worth it...
+
+        This program can be used with any type of file since all what the
+        program is doing is reading the bytes of the file itself, so the
+        program can be used to color and make art somehow, try with some
+        files in the 'examples' folder, if you want to see the color palette
+        make a `cat` into `colores/palette`.
+
+    ~ Credits:
+        * Original version: https://github.com/FireyFly/pixd.com
+        * Bat ascii art by jgs
+
+    Juan Diego PM
+    Oct 11 2024

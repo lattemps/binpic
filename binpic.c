@@ -5,47 +5,11 @@
  */
 #include <err.h>
 #include <stdio.h>
-#include <getopt.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
 #include <sys/ioctl.h>
-
-uint32_t Gradient[256] = {
-    0x000000, 0x010101, 0x020202, 0x030303, 0x040404, 0x050505, 0x060606, 0x070707,
-    0x080808, 0x090909, 0x0A0A0A, 0x0B0B0B, 0x0C0C0C, 0x0D0D0D, 0x0E0E0E, 0x0F0F0F,
-    0x101010, 0x111111, 0x121212, 0x131313, 0x141414, 0x151515, 0x161616, 0x171717,
-    0x181818, 0x191919, 0x1A1A1A, 0x1B1B1B, 0x1C1C1C, 0x1D1D1D, 0x1E1E1E, 0x1F1F1F,
-    0x202020, 0x212121, 0x222222, 0x232323, 0x242424, 0x252525, 0x262626, 0x272727,
-    0x282828, 0x292929, 0x2A2A2A, 0x2B2B2B, 0x2C2C2C, 0x2D2D2D, 0x2E2E2E, 0x2F2F2F,
-    0x303030, 0x313131, 0x323232, 0x333333, 0x343434, 0x353535, 0x363636, 0x373737,
-    0x383838, 0x393939, 0x3A3A3A, 0x3B3B3B, 0x3C3C3C, 0x3D3D3D, 0x3E3E3E, 0x3F3F3F,
-    0x404040, 0x414141, 0x424242, 0x434343, 0x444444, 0x454545, 0x464646, 0x474747,
-    0x484848, 0x494949, 0x4A4A4A, 0x4B4B4B, 0x4C4C4C, 0x4D4D4D, 0x4E4E4E, 0x4F4F4F,
-    0x505050, 0x515151, 0x525252, 0x535353, 0x545454, 0x555555, 0x565656, 0x575757,
-    0x585858, 0x595959, 0x5A5A5A, 0x5B5B5B, 0x5C5C5C, 0x5D5D5D, 0x5E5E5E, 0x5F5F5F,
-    0x606060, 0x616161, 0x626262, 0x636363, 0x646464, 0x656565, 0x666666, 0x676767,
-    0x686868, 0x696969, 0x6A6A6A, 0x6B6B6B, 0x6C6C6C, 0x6D6D6D, 0x6E6E6E, 0x6F6F6F,
-    0x707070, 0x717171, 0x727272, 0x737373, 0x747474, 0x757575, 0x767676, 0x777777,
-    0x787878, 0x797979, 0x7A7A7A, 0x7B7B7B, 0x7C7C7C, 0x7D7D7D, 0x7E7E7E, 0x7F7F7F,
-    0x808080, 0x818181, 0x828282, 0x838383, 0x848484, 0x858585, 0x868686, 0x878787,
-    0x888888, 0x898989, 0x8A8A8A, 0x8B8B8B, 0x8C8C8C, 0x8D8D8D, 0x8E8E8E, 0x8F8F8F,
-    0x909090, 0x919191, 0x929292, 0x939393, 0x949494, 0x959595, 0x969696, 0x979797,
-    0x989898, 0x999999, 0x9A9A9A, 0x9B9B9B, 0x9C9C9C, 0x9D9D9D, 0x9E9E9E, 0x9F9F9F,
-    0xA0A0A0, 0xA1A1A1, 0xA2A2A2, 0xA3A3A3, 0xA4A4A4, 0xA5A5A5, 0xA6A6A6, 0xA7A7A7,
-    0xA8A8A8, 0xA9A9A9, 0xAAAAAA, 0xABABAB, 0xACACAC, 0xADADAD, 0xAEAEAE, 0xAFAFAF,
-    0xB0B0B0, 0xB1B1B1, 0xB2B2B2, 0xB3B3B3, 0xB4B4B4, 0xB5B5B5, 0xB6B6B6, 0xB7B7B7,
-    0xB8B8B8, 0xB9B9B9, 0xBABABA, 0xBBBBBB, 0xBCBCBC, 0xBDBDBD, 0xBEBEBE, 0xBFBFBF,
-    0xC0C0C0, 0xC1C1C1, 0xC2C2C2, 0xC3C3C3, 0xC4C4C4, 0xC5C5C5, 0xC6C6C6, 0xC7C7C7,
-    0xC8C8C8, 0xC9C9C9, 0xCACACA, 0xCBCBCB, 0xCCCCCC, 0xCDCDCD, 0xCECECE, 0xCFCFCF,
-    0xD0D0D0, 0xD1D1D1, 0xD2D2D2, 0xD3D3D3, 0xD4D4D4, 0xD5D5D5, 0xD6D6D6, 0xD7D7D7,
-    0xD8D8D8, 0xD9D9D9, 0xDADADA, 0xDBDBDB, 0xDCDCDC, 0xDDDDDD, 0xDEDEDE, 0xDFDFDF,
-    0xE0E0E0, 0xE1E1E1, 0xE2E2E2, 0xE3E3E3, 0xE4E4E4, 0xE5E5E5, 0xE6E6E6, 0xE7E7E7,
-    0xE8E8E8, 0xE9E9E9, 0xEAEAEA, 0xEBEBEB, 0xECECEC, 0xEDEDED, 0xEEEEEE, 0xEFEFEF,
-    0xF0F0F0, 0xF1F1F1, 0xF2F2F2, 0xF3F3F3, 0xF4F4F4, 0xF5F5F5, 0xF6F6F6, 0xF7F7F7,
-    0xF8F8F8, 0xF9F9F9, 0xFAFAFA, 0xFBFBFB, 0xFCFCFC, 0xFDFDFD, 0xFEFEFE, 0xFFFFFF
-};
 
 uint32_t Colors[256] = {
   0x340000, 0x560000, 0x640000, 0x750000, 0x870000, 0x9b0000, 0xb00000, 0xc60000,
@@ -82,65 +46,43 @@ uint32_t Colors[256] = {
   0xdd0093, 0xf500a3, 0xff0faf, 0xff28b7, 0xff43c0, 0xff5ec9, 0xff79d2, 0xff79f5,
 };
 
-
 struct BinPic
 {
-    struct  { long x, y; } sz;
-    char    *contents;
-    char    *filename;
-    char    *anfilename;
-    size_t  filength;
-    bool    putitle;
+    uint32_t screenwidth;
+    size_t   filength;
+    char     *contents;
 };
 
 static void print_usage (void);
-static void read_bin_file (struct BinPic *const);
+static void read_bin_file (struct BinPic *const, const char *const);
 
-static void get_terminal_dimensions (long *const, long *const);
-static void display_colored_bin (struct BinPic *const);
+static void get_screen_width (uint32_t *const);
+static void display_colored_bin (struct BinPic *const, const char *const);
 
 int main (int argc, char **argv)
 {
     if (argc == 1) print_usage();
 
     struct BinPic bp = {0};
-    int32_t op;
 
-    while ((op = getopt(argc, argv, ":Tha:b:")) != -1) {
-        switch (op) {
-            case 'T': bp.putitle    = true; break;
-            case 'a': bp.anfilename = optarg; break;
-            case 'b': bp.filename   = optarg; break;
-            case 'h': print_usage(); break;
-            case '?': errx(EXIT_FAILURE, "unknonwn '-%c' option...", optopt); break;
-            case ':': errx(EXIT_FAILURE, "option '-%c' needs an argument...", optopt); break;
-        }
-    }
+    read_bin_file(&bp, argv[1]);
+    get_screen_width(&bp.screenwidth);
 
-    if (!bp.filename) print_usage();
-
-    read_bin_file(&bp);
-    get_terminal_dimensions(&bp.sz.y, &bp.sz.x);
-
-    display_colored_bin(&bp);
+    display_colored_bin(&bp, argv[1]);
     return 0;
 }
 
 static void print_usage (void)
 {
     fprintf(stderr, "binpic - binary picture (%s - %s)\n\n", __DATE__, __TIME__);
-    fputs("Usage: binpic -b <filename> -[Th] -[a] <*>\n", stderr);
-    fputs("Arguments:\n", stderr);
-    fputs("  -T             Write file's name in the middle of the screen\n", stderr);
-    fputs("  -a             Animate output with <*> anfilename\n", stderr);
-    fputs("  -h             Display this message\n", stderr);
+    fputs("Usage: binpic <filename>\n", stderr);
     exit(EXIT_SUCCESS);
 }
 
-static void read_bin_file (struct BinPic *const bp)
+static void read_bin_file (struct BinPic *const bp, const char *const filename)
 {
-    FILE *bfile = fopen(bp->filename, "rb");
-    if (!bfile) err(EXIT_FAILURE, "'%s' file is not valid", bp->filename);
+    FILE *bfile = fopen(filename, "rb");
+    if (!bfile) err(EXIT_FAILURE, "'%s' file is not valid", filename);
 
     fseek(bfile, 0L, SEEK_END);
     bp->filength = ftell(bfile);
@@ -155,16 +97,15 @@ static void read_bin_file (struct BinPic *const bp)
     fclose(bfile);
 }
 
-static void get_terminal_dimensions (long *const lines, long *const cols)
+static void get_screen_width (uint32_t *const width)
 {
     struct winsize sz;
     ioctl(0, TIOCGWINSZ, &sz);
 
-    *lines = sz.ws_row;
-    *cols = sz.ws_col;
+    *width = sz.ws_col;
 }
 
-static void display_colored_bin (struct BinPic *const bp)
+static void display_colored_bin (struct BinPic *const bp, const char *const name)
 {
     printf("\x1b[2J");
     uint8_t r = 0, g = 0, b = 0;
@@ -177,15 +118,23 @@ static void display_colored_bin (struct BinPic *const bp)
         g = (color >> 8) & 0xff;
         b = (color) & 0xff;
 
-        printf("\x1b[48;2;%d;%d;%dm \x1b[0m", r, g, b);
+        printf("\x1b[48;2;%d;%d;%dm ", r, g, b);
     }
+    printf("\x1b[0m\x1b[2m\n");
 
-    /*for (size_t k = 0; k < 256; k++) {
-        unsigned int this   = Gradient[k];
-        unsigned char red   = (this >> 16) & 0xff;
-        unsigned char green = (this >> 8) & 0xff;
-        unsigned char blue  = (this) & 0xff;
+    const size_t msglen = strlen(name) + strlen("This is how '' looks like; c'est magnifique...!") + 1;
+    char *message = (char*) calloc(msglen, sizeof(char));
 
-        printf("\x1b[48;2;%d;%d;%dm(%3d, %3d, %3d)\x1b[0m\n", red, green, blue, red, green, blue);
-    }*/
+    snprintf(message, msglen, "This is how '%s' looks like; c'est magnifique...!", name);
+
+    printf("%*s< \x1b[5m%s\x1b[25m >\n", (uint32_t) (bp->screenwidth - msglen - 4), " ", message);
+    printf("%*s", bp->screenwidth - 15, "     \\   ^__^\n");
+    printf("%*s", bp->screenwidth - 7,  "      \\  (oo)\\_______\n");
+    printf("%*s", bp->screenwidth - 3, "         (__)\\       )\\/\\\n");
+    printf("%*s", bp->screenwidth - 6, "             ||-----w||\n");
+    printf("%*s", bp->screenwidth - 6, "             ||      ||\n");
+
+    free(bp->contents);
+    free(message);
+    printf("\x1b[0m");
 }
